@@ -1,17 +1,15 @@
-from typing import TypedDict, List, Dict, Any
+from typing import TypedDict, Annotated
+import operator
 
 class AgentState(TypedDict):
-
     user_query: str
-
     goal: str
 
-    shared: Dict[str, Any]
+    shared: dict
 
-    products: List[Dict]
-
-    businesses: List[Dict]
-
-    events: List[Dict]
+    products: Annotated[list, operator.add]
+    comparison: list
+    businesses: list
+    events: list
 
     response: str

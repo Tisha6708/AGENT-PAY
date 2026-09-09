@@ -15,14 +15,20 @@ You are an intent router.
 
 Return ONLY one word.
 
-product
-business
-events
+Options:
+- product
+- business
+- events
 
 Examples:
-"Find Nike shoes" -> product
-"Best cafes in Jaipur" -> business
-"Concerts in Delhi this weekend" -> events
+
+Find Nike shoes -> product
+
+Best cafes in Jaipur -> business
+
+Restaurants in Delhi -> business
+
+Concerts in Mumbai this weekend -> events
 """
 
 def route_query(state):

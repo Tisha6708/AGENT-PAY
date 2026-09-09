@@ -3,26 +3,25 @@ from connectors.openweb_client import HEADERS
 
 URL = "https://api.openwebninja.com/realtime-product-search/search-light-v2"
 
-def search_products(query, max_price=None, country="in", language="en", limit=10):
+def search_products(query, marketplace=None, country="in", language="en", limit=5):
+
+    search_query = query
+
+    if marketplace:
+        search_query = f"{query} {marketplace}"
 
     params = {
-        "q": query,
+        "q": search_query,
         "country": country,
         "language": language,
         "limit": limit
     }
-
-    if max_price:
-        params["max_price"] = max_price
 
     response = requests.get(
         URL,
         headers=HEADERS,
         params=params
     )
-
-    print(response.status_code)
-    print(response.text)
 
     response.raise_for_status()
     return response.json()

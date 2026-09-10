@@ -1,15 +1,35 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import ChatPage from "./pages/ChatPage";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/chat" element={<ChatPage />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          user ? <Navigate to="/chat" replace /> : <LandingPage />
+        }
+      />
+
+      <Route
+        path="/chat"
+        element={
+          user ? <ChatPage /> : <Navigate to="/" replace />
+        }
+      />
+    </Routes>
   );
 }
 

@@ -52,43 +52,59 @@ CITY_FIX = {
 
 
 def extract_entities(text):
-    response = llm.invoke(f"{SYSTEM}\n\nUser: {text}")
-
-    content = response.content
-
-    if isinstance(content, list):
-        content = "".join(
-            part if isinstance(part, str)
-            else part.get("text", "")
-            for part in content
-        )
-
-    content = content.strip()
-    content = re.sub(r"^```json|^```|```$", "", content).strip()
-
-    # Fallback if Gemini returns nothing
-    if not content:
-        return {
-            "query": text,
-            "city": None,
-            "budget": None,
-            "currency": "INR"
-        }
 
     try:
-        data = json.loads(content)
+        response = llm.invoke(f"{SYSTEM}\n\nUser: {text}")
 
-        # Normalize city names
-        city = data.get("city")
-        if city in CITY_FIX:
-            data["city"] = CITY_FIX[city]
+        content = response.content
 
-        return data
+        if isinstance(content, list):
+            content = "".join(
+                part if isinstance(part, str)
+                else part.get("text", "")
+                for part in content
+            )
 
-    except json.JSONDecodeError:
-        return {
-            "query": text,
-            "city": None,
-            "budget": None,
-            "currency": "INR"
-        }
+        content = content.strip()
+        content = re.sub(r"^```json|^```|```$", "", content).strip()
+
+        if content:
+            data = json.loads(content)
+
+            city = data.get("city")
+            if city in CITY_FIX:
+                data["city"] = CITY_FIX[city]
+
+            return data
+
+    except Exception:
+        pass
+
+    # ---------- Fallback ----------
+    budget = None
+    match = re.search(r"(?:₹|rs\.?\s?)(\d[\d,]*)|under\s+(\d[\d,]*)", text.lower())
+
+    if match:
+        amount = match.group(1) or match.group(2)
+        budget = int(amount.replace(",", ""))
+
+    city = None
+    cities = ["Jaipur", "Delhi", "Mumbai", "Bangalore", "Hyderabad", "Pune"]
+
+    for c in cities:
+        if c.lower() in text.lower():
+            city = c
+            break
+
+    query = text
+    query = re.sub(r"under\s+₹?\d[\d,]*", "", query, flags=re.I)
+    query = re.sub(r"₹\d[\d,]*", "", query)
+    query = re.sub(r"\bin\s+(Jaipur|Delhi|Mumbai|Bangalore|Hyderabad|Pune)\b",
+                   "", query, flags=re.I)
+
+    return {
+        "query": query.strip(),
+        "city": city,
+        "budget": budget,
+        "currency": "INR"
+    }

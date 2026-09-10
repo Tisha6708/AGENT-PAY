@@ -9,7 +9,10 @@ import BusinessCard from "../components/BusinessCard";
 import EventCard from "../components/EventCard";
 import ComparisonCard from "../components/ComparisonCard";
 
+import { useAuth } from "../context/AuthContext";
+
 export default function ChatPage() {
+  const { user } = useAuth();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -17,16 +20,16 @@ export default function ChatPage() {
   const handleSend = async () => {
     if (!message.trim()) return;
 
-    const user = {
+    const userMessage = {
       type: "user",
       text: message,
     };
 
-    setMessages((prev) => [...prev, user]);
+    setMessages((prev) => [...prev, userMessage]);
     setLoading(true);
 
     try {
-      const res = await sendMessage(message);
+      const res = await sendMessage(message, user);
 
       console.log("API Response:", res);
 

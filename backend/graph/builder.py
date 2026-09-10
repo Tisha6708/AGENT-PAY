@@ -12,6 +12,7 @@ from agents.nykaa_agent import nykaa_agent
 from agents.business_agent import business_agent
 from agents.events_agent import events_agent
 from agents.comparison_agent import comparison_agent
+from agents.auth_agent import auth_agent
 
 
 # ---------------- Graph ---------------- #
@@ -29,6 +30,7 @@ builder.add_node("business", business_agent)
 builder.add_node("events", events_agent)
 
 builder.add_node("compare", comparison_agent)
+builder.add_node("auth", auth_agent)
 
 
 # ---------------- Routing ---------------- #
@@ -66,7 +68,8 @@ builder.add_edge("flipkart", "compare")
 builder.add_edge("myntra", "compare")
 builder.add_edge("nykaa", "compare")
 
-builder.add_edge("compare", END)
+builder.add_edge("compare", "auth")
+builder.add_edge("auth", END)
 
 builder.add_edge("business", END)
 builder.add_edge("events", END)

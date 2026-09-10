@@ -32,19 +32,33 @@ Concerts in Mumbai this weekend -> events
 """
 
 def route_query(state):
+
     query = state["user_query"]
 
-    result = llm.invoke(f"{SYSTEM}\n\nUser: {query}")
+    try:
+        result = llm.invoke(f"{SYSTEM}\n\nUser: {query}")
 
-    # Handle Gemini response
-    if isinstance(result.content, list):
-        intent = "".join(
-            part if isinstance(part, str)
-            else part.get("text", "")
-            for part in result.content
-        )
-    else:
-        intent = result.content
+        if isinstance(result.content, list):
+            intent = "".join(
+                part if isinstance(part, str)
+                else part.get("text", "")
+                for part in result.content
+            )
+        else:
+            intent = result.content
 
-    state["goal"] = intent.strip().lower()
+        state["goal"] = intent.strip().lower()
+
+    except Exception:
+        q = query.lower()
+
+        if any(word in q for word in ["cafe", "cafes", "restaurant", "restaurants", "food"]):
+            state["goal"] = "business"
+
+        elif any(word in q for word in ["event", "events", "concert", "show", "festival"]):
+            state["goal"] = "events"
+
+        else:
+            state["goal"] = "product"
+
     return state

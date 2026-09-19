@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Sparkles, Send, ShoppingBag } from "lucide-react";
 
 import { sendMessage } from "../services/api";
@@ -13,6 +14,8 @@ import { useAuth } from "../context/AuthContext";
 
 export default function ChatPage() {
   const { user } = useAuth();
+
+  const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -81,31 +84,28 @@ export default function ChatPage() {
 
         <div className="space-y-2">
           <div
-            className={`p-3 rounded-xl ${
-              currentGoal === "product"
+            className={`p-3 rounded-xl ${currentGoal === "product"
                 ? "bg-violet-100 text-violet-700"
                 : "hover:bg-gray-100"
-            }`}
+              }`}
           >
             🛍 Product Search
           </div>
 
           <div
-            className={`p-3 rounded-xl ${
-              currentGoal === "business"
+            className={`p-3 rounded-xl ${currentGoal === "business"
                 ? "bg-violet-100 text-violet-700"
                 : "hover:bg-gray-100"
-            }`}
+              }`}
           >
             ☕ Cafés & Restaurants
           </div>
 
           <div
-            className={`p-3 rounded-xl ${
-              currentGoal === "events"
+            className={`p-3 rounded-xl ${currentGoal === "events"
                 ? "bg-violet-100 text-violet-700"
                 : "hover:bg-gray-100"
-            }`}
+              }`}
           >
             🎉 Events
           </div>
@@ -124,11 +124,19 @@ export default function ChatPage() {
             </p>
           </div>
 
+          <button
+            onClick={() => navigate("/orders")}
+            className="bg-white border px-4 py-2 rounded-xl hover:bg-gray-200 text-sm font-medium"
+          >
+            My Orders
+          </button>
+
           <div className="bg-violet-600 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2">
             <Sparkles size={14} />
             Gemini + LangGraph
           </div>
         </div>
+        
 
         {/* Chat */}
         <div className="flex-1 overflow-y-auto p-8 space-y-6">

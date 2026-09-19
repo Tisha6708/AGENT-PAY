@@ -39,10 +39,17 @@ export default function ProductCard({ product }) {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                order_id: response.razorpay_order_id,
-                payment_id: response.razorpay_payment_id,
-                signature: response.razorpay_signature,
-              }),
+  uid: user.uid,
+  name: user.displayName,
+  email: user.email,
+
+  product: product.title,
+  amount: amount,
+
+  order_id: response.razorpay_order_id,
+  payment_id: response.razorpay_payment_id,
+  signature: response.razorpay_signature,
+}),
             }
           );
 

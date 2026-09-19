@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import ChatPage from "./pages/ChatPage";
+import OrdersPage from "./pages/OrdersPage";
 import { useAuth } from "./context/AuthContext";
 
 function App() {
@@ -27,6 +28,13 @@ function App() {
         path="/chat"
         element={
           user ? <ChatPage /> : <Navigate to="/" replace />
+        }
+      />
+
+      <Route
+        path="/orders"
+        element={
+          user ? <OrdersPage /> : <Navigate to="/" replace />
         }
       />
     </Routes>

@@ -1,28 +1,47 @@
-from services.wallet_service import get_wallet
+from datetime import datetime
 
 def wallet_agent(state):
-
-    uid = state["user"]["uid"]
     amount = state["payment"]["amount"]
+    settings = state["wallet_settings"]
+    spent_today = state.get("today_spent", 0)
 
-    wallet = get_wallet(uid)
+    max_transaction = settings["maxTransaction"]
+    daily_limit = settings["dailyLimit"]
+    approval_limit = settings["approvalLimit"]
+    security = settings["security"]
 
-    if not wallet:
+    # 1. Maximum transaction limit
+    if amount > max_transaction:
         state["wallet"] = {
             "approved": False,
-            "reason": "Wallet not configured"
+            "reason": f"Amount exceeds your wallet limit of ₹{max_transaction}"
         }
         return state
 
-    if amount > wallet["transaction_limit"]:
+    # 2. Daily spending limit
+    if spent_today + amount > daily_limit:
+        remaining = max(daily_limit - spent_today, 0)
+
         state["wallet"] = {
             "approved": False,
-            "reason": f"Transaction exceeds ₹{wallet['transaction_limit']}"
+            "reason": f"Daily limit exceeded. Remaining balance: ₹{remaining}"
         }
         return state
-    
+
+    # 3. Late-night protection (11 PM – 5 AM)
+    current_hour = datetime.now().hour
+
+    if security["lateNight"] and (current_hour >= 23 or current_hour < 5):
+        state["wallet"] = {
+            "approved": False,
+            "reason": "Late-night payments are blocked (11 PM–5 AM)"
+        }
+        return state
+
+    # 4. Approval threshold
     state["wallet"] = {
         "approved": True,
+        "approval_required": amount > approval_limit,
         "reason": "Wallet approved"
     }
 

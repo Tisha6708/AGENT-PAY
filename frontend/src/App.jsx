@@ -3,6 +3,8 @@ import LandingPage from "./pages/LandingPage";
 import ChatPage from "./pages/ChatPage";
 import OrdersPage from "./pages/OrdersPage";
 import AuditPage from "./pages/AuditPage";
+import ProfilePage from "./pages/ProfilePage";
+import WalletPage from "./pages/WalletPage";
 import { useAuth } from "./context/AuthContext";
 
 function App() {
@@ -43,6 +45,20 @@ function App() {
         path="/audit"
         element={
           user ? <AuditPage /> : <Navigate to="/" replace />
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          user ? <ProfilePage /> : <Navigate to="/" replace />
+        }
+      />
+
+      <Route
+        path="/wallet"
+        element={
+          user ? <WalletPage /> : <Navigate to="/" replace />
         }
       />
     </Routes>

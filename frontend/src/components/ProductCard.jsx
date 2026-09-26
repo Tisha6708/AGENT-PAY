@@ -1,15 +1,18 @@
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { createPayment } from "../services/payment";
+import PaymentSuccessModal from "./PaymentSuccessModal";
 import { Star, ShieldCheck, ExternalLink } from "lucide-react";
 
 export default function ProductCard({ product }) {
   const { user } = useAuth();
 
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [paidAmount, setPaidAmount] = useState(0);
+
   const handlePayment = async () => {
     try {
-      const amount = Number(
-        product.price.replace(/[₹,]/g, "")
-      );
+      const amount = Number(product.price.replace(/[₹,]/g, ""));
 
       // Wallet + KYA + Firewall + Order
       const payment = await createPayment(
@@ -18,7 +21,7 @@ export default function ProductCard({ product }) {
         user
       );
 
-      // Blocked
+      // Blocked by AI
       if (!payment.success) {
         let message = `🛡️ ${payment.reason}`;
 
@@ -77,93 +80,102 @@ export default function ProductCard({ product }) {
           const data = await verifyRes.json();
 
           if (data.verified) {
-            alert("✅ Payment Verified!");
+            setPaidAmount(amount);
+            setSuccessOpen(true);
           } else {
             alert("❌ Payment Verification Failed");
           }
         },
 
         modal: {
-          ondismiss: () =>
-            console.log("Payment cancelled"),
+          ondismiss: () => console.log("Payment cancelled"),
         },
       };
 
       const razorpay = new window.Razorpay(options);
       razorpay.open();
+
     } catch (err) {
       console.error(err);
-      alert(
-        "Something went wrong while initiating payment."
-      );
+      alert("Something went wrong while initiating payment.");
     }
   };
 
   return (
-    <div className="group rounded-3xl border border-white/10 bg-[#0D0D0D] overflow-hidden hover:border-violet-500/30 hover:bg-[#111111] transition-all duration-300">
+    <>
+      <div className="group rounded-3xl border border-white/10 bg-[#0D0D0D] overflow-hidden hover:border-violet-500/30 hover:bg-[#111111] transition-all duration-300">
 
-      {/* Image */}
-      <div className="relative bg-gradient-to-br from-[#181818] to-[#101010] h-60 flex items-center justify-center p-6">
-        <img
-          src={product.image}
-          alt={product.title}
-          className="max-h-48 object-contain group-hover:scale-105 transition duration-300"
-        />
-
-        {/* Seller badge */}
-        <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/60 backdrop-blur text-xs text-zinc-300 border border-white/10">
-          {product.seller || "Marketplace"}
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-5">
-
-        <h3 className="text-white font-semibold text-lg leading-7 line-clamp-2 min-h-[56px]">
-          {product.title}
-        </h3>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2 mt-3">
-          <Star
-            size={16}
-            className="fill-yellow-400 text-yellow-400"
+        {/* Image */}
+        <div className="relative bg-gradient-to-br from-[#181818] to-[#101010] h-60 flex items-center justify-center p-6">
+          <img
+            src={product.image}
+            alt={product.title}
+            className="max-h-48 object-contain group-hover:scale-105 transition duration-300"
           />
-          <span className="text-sm text-zinc-300">
-            {product.rating || "N/A"}
-          </span>
-        </div>
 
-        {/* Price */}
-        <div className="mt-5 flex items-end justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-zinc-500">
-              Best Price
-            </p>
-            <h2 className="text-3xl font-bold text-white">
-              {product.price}
-            </h2>
-          </div>
-
-          <div className="flex items-center gap-1 text-emerald-400 text-xs">
-            <ShieldCheck size={14} />
-            Verified
+          {/* Seller */}
+          <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/60 backdrop-blur text-xs text-zinc-300 border border-white/10">
+            {product.seller || "Marketplace"}
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="h-px bg-white/10 my-5" />
+        {/* Content */}
+        <div className="p-5">
 
-        {/* CTA */}
-        <button
-          onClick={handlePayment}
-          className="w-full flex items-center justify-center gap-2 bg-white text-black hover:bg-zinc-200 py-3 rounded-2xl font-semibold transition"
-        >
-          Buy with AgentPay
-          <ExternalLink size={16} />
-        </button>
+          <h3 className="text-white font-semibold text-lg leading-7 line-clamp-2 min-h-[56px]">
+            {product.title}
+          </h3>
 
+          {/* Rating */}
+          <div className="flex items-center gap-2 mt-3">
+            <Star
+              size={16}
+              className="fill-yellow-400 text-yellow-400"
+            />
+            <span className="text-sm text-zinc-300">
+              {product.rating || "N/A"}
+            </span>
+          </div>
+
+          {/* Price */}
+          <div className="mt-5 flex items-end justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-zinc-500">
+                Best Price
+              </p>
+              <h2 className="text-3xl font-bold text-white">
+                {product.price}
+              </h2>
+            </div>
+
+            <div className="flex items-center gap-1 text-emerald-400 text-xs">
+              <ShieldCheck size={14} />
+              Verified
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="h-px bg-white/10 my-5" />
+
+          {/* Buy Button */}
+          <button
+            onClick={handlePayment}
+            className="w-full flex items-center justify-center gap-2 bg-white text-black hover:bg-zinc-200 py-3 rounded-2xl font-semibold transition"
+          >
+            Buy with AgentPay
+            <ExternalLink size={16} />
+          </button>
+
+        </div>
       </div>
-    </div>
+
+      {/* Success Modal */}
+      <PaymentSuccessModal
+        open={successOpen}
+        onClose={() => setSuccessOpen(false)}
+        product={product.title}
+        amount={paidAmount}
+      />
+    </>
   );
 }

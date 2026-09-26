@@ -5,6 +5,8 @@ from agents.payment_agent import payment_agent
 from services.razorpay_service import verify_signature
 from services.firestore_service import save_order
 from services.firestore_service import save_audit
+from services.firestore_service import get_wallet_settings
+from services.firestore_service import get_today_spending
 
 router = APIRouter()
 
@@ -29,17 +31,21 @@ class VerifyRequest(BaseModel):
     payment_id: str
     signature: str
 
-
 @router.post("/payment")
 def create_payment(request: PaymentRequest):
 
+    wallet_settings = get_wallet_settings(request.user.uid)
+    today_spent = get_today_spending(request.user.uid)
+
     state = {
         "user": request.user.model_dump(),
+        "wallet_settings": wallet_settings,
+        "today_spent": today_spent,
         "payment": {
             "amount": request.amount,
             "product": request.product_name,
-            "order": None
-        }
+            "order": None,
+        },
     }
 
     result = payment_agent(state)

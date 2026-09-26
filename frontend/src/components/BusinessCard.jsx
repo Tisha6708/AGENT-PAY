@@ -1,48 +1,98 @@
+import {
+  Star,
+  MapPin,
+  Navigation,
+  CheckCircle2,
+} from "lucide-react";
+
 export default function BusinessCard({ business }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border hover:shadow-xl transition overflow-hidden max-w-[430px]">
-      <img
-        src={business.image}
-        alt={business.name}
-        className="w-full h-48 object-cover"
-      />
+    <div className="group rounded-3xl border border-white/10 bg-[#0D0D0D] overflow-hidden hover:border-violet-500/30 hover:bg-[#111111] transition-all duration-300">
 
-      <div className="p-4">
-        <div className="flex justify-between items-start">
-          <h3 className="font-bold text-lg leading-tight">
-            {business.name}
-          </h3>
+      {/* Image */}
+      <div className="relative h-52 overflow-hidden">
+        <img
+          src={business.image}
+          alt={business.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+        />
 
-          <div className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-lg whitespace-nowrap">
-            ⭐ {business.rating}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+
+        {/* Type badge */}
+        <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-xs text-zinc-200">
+          {business.type}
+        </div>
+
+        {/* Rating */}
+        <div className="absolute top-4 right-4 flex items-center gap-1 px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-sm text-white">
+          <Star
+            size={14}
+            className="fill-yellow-400 text-yellow-400"
+          />
+          {business.rating}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-5 flex flex-col">
+
+        <h3 className="text-xl font-semibold text-white leading-7">
+          {business.name}
+        </h3>
+
+        {/* Address */}
+        <div className="flex items-start gap-2 mt-3 text-sm">
+          <MapPin
+            size={15}
+            className="text-violet-400 mt-0.5 shrink-0"
+          />
+
+          <p className="text-zinc-400 line-clamp-2">
+            {business.address}
+          </p>
+        </div>
+
+        {/* Info Row */}
+        <div className="flex justify-between items-center mt-5">
+          <div>
+            <p className="text-xs text-zinc-500 uppercase tracking-wider">
+              Price
+            </p>
+
+            <p className="font-semibold text-white">
+              {business.price_level || "N/A"}
+            </p>
+          </div>
+
+          <div className="text-right">
+            <div className="flex items-center justify-end gap-1 text-emerald-400 text-sm">
+              <CheckCircle2 size={14} />
+              {business.status}
+            </div>
+
+            <p className="text-xs text-zinc-500 mt-1">
+              {business.reviews} reviews
+            </p>
           </div>
         </div>
 
-        <p className="text-sm text-gray-500 mt-1">{business.type}</p>
+        {/* Divider */}
+        <div className="h-px bg-white/10 my-5" />
 
-        <p className="text-xs text-gray-600 mt-3 line-clamp-2">
-          📍 {business.address}
-        </p>
-
-        <div className="flex justify-between items-center mt-4">
-          <span className="font-semibold text-violet-700">
-            {business.price_level || "N/A"}
-          </span>
-
-          <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full">
-            {business.status}
-          </span>
-        </div>
-
-        <div className="text-xs text-gray-400 mt-2">
-          {business.reviews} reviews
-        </div>
-
-        <a href={business.map} target="_blank" rel="noreferrer">
-          <button className="w-full mt-4 bg-black hover:bg-gray-900 text-white py-3 rounded-xl font-medium">
-            View on Maps
+        {/* Maps CTA */}
+        <a
+          href={business.map}
+          target="_blank"
+          rel="noreferrer"
+          className="w-full"
+        >
+          <button className="w-full flex items-center justify-center gap-2 bg-white text-black hover:bg-zinc-200 py-3 rounded-2xl font-semibold transition">
+            <Navigation size={17} />
+            Open in Maps
           </button>
         </a>
+
       </div>
     </div>
   );

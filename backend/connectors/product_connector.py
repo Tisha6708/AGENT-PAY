@@ -1,7 +1,7 @@
 import requests
 from connectors.openweb_client import HEADERS
 
-URL = "https://api.openwebninja.com/realtime-product-search/search-light-v2"
+URL = "https://api.openwebninja.com/realtime-product-search/v2"
 
 def search_products(query, marketplace=None, country="in", language="en", limit=5):
 

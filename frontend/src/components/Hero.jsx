@@ -1,66 +1,63 @@
-import { useNavigate } from "react-router-dom";
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../firebase";
+import { FcGoogle } from "react-icons/fc";
+import { ShieldCheck, Wallet, Sparkles } from "lucide-react";
+import { signInWithGoogle } from "../firebase";
 
-function Hero() {
-  const navigate = useNavigate();
-
-  const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-
-      console.log("Logged in:", result.user);
-
-      navigate("/chat");
-    } catch (error) {
-      console.error(error);
-      alert("Google Sign-In failed");
-    }
-  };
-
+export default function Hero() {
   return (
-    <div>
-      <div className="flex gap-3 mb-6">
-        <span className="bg-violet-100 text-violet-700 px-3 py-1 rounded-full text-sm font-medium">
-          Verified AI
-        </span>
-
-        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-          Razorpay Ready
-        </span>
+    <div className="max-w-2xl">
+      {/* Badge */}
+      <div className="inline-flex items-center gap-2 border border-white/10 bg-white/5 rounded-full px-4 py-2 text-sm text-zinc-300">
+        <Sparkles size={14} className="text-violet-400" />
+        AI Commerce • Secure Payments
       </div>
 
-      <p className="text-violet-600 font-semibold tracking-wide mb-4">
-        TRUST INFRASTRUCTURE FOR AI COMMERCE
-      </p>
-
-      <h1 className="text-6xl font-bold leading-tight text-gray-900">
+      {/* Heading */}
+      <h1 className="mt-8 text-6xl xl:text-7xl font-bold leading-[0.95] tracking-tight">
         Let AI shop.
-        <span className="text-violet-700"> You stay in control.</span>
+        <br />
+        <span className="text-zinc-400">You stay in control.</span>
       </h1>
 
-      <p className="mt-6 text-lg text-gray-600 leading-relaxed">
-        Compare hotels, food and products with AI using verified identity,
-        programmable wallets and secure Razorpay payments.
+      {/* Description */}
+      <p className="mt-8 text-xl leading-9 text-zinc-400 max-w-xl">
+        Search products, restaurants and events using natural language.
+        Every transaction is protected by Wallet policies, KYA verification
+        and an AI Firewall before payment.
       </p>
 
+      {/* CTA */}
       <button
-        onClick={handleGoogleLogin}
-        className="mt-8 flex items-center gap-3 bg-white border border-gray-200 px-6 py-4 rounded-2xl shadow hover:shadow-md transition"
+        onClick={signInWithGoogle}
+        className="mt-10 flex items-center gap-3 bg-white text-black hover:bg-zinc-200 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 shadow-xl"
       >
-        <img
-          src="https://www.svgrepo.com/show/475656/google-color.svg"
-          alt="Google"
-          className="w-6 h-6"
-        />
-        <span className="font-semibold">Continue with Google</span>
+        <FcGoogle size={24} />
+        Continue with Google
       </button>
 
-      <p className="text-sm text-gray-500 mt-3">
-        Your payment details are never shared with AI.
+      <p className="mt-4 text-sm text-zinc-500">
+        No card details are stored by AgentPay.
       </p>
+
+      {/* Trust metrics */}
+      <div className="mt-14 grid grid-cols-3 gap-6 border-t border-white/10 pt-8">
+        <div>
+          <ShieldCheck className="text-violet-400 mb-3" size={22} />
+          <h3 className="text-2xl font-bold">KYA</h3>
+          <p className="text-sm text-zinc-500 mt-1">Verified AI identity</p>
+        </div>
+
+        <div>
+          <Wallet className="text-violet-400 mb-3" size={22} />
+          <h3 className="text-2xl font-bold">Wallet</h3>
+          <p className="text-sm text-zinc-500 mt-1">Programmable limits</p>
+        </div>
+
+        <div>
+          <Sparkles className="text-violet-400 mb-3" size={22} />
+          <h3 className="text-2xl font-bold">24/7</h3>
+          <p className="text-sm text-zinc-500 mt-1">AI transaction guard</p>
+        </div>
+      </div>
     </div>
   );
 }
-
-export default Hero;

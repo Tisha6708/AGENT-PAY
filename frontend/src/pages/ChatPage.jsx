@@ -1,21 +1,28 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Send, ShoppingBag } from "lucide-react";
+import {
+  Sparkles,
+  Send,
+  Package,
+  Shield,
+  LogOut,
+  History,
+  User,
+} from "lucide-react";
 
 import { sendMessage } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 import ProductCard from "../components/ProductCard";
 import BusinessCard from "../components/BusinessCard";
 import EventCard from "../components/EventCard";
 import ComparisonCard from "../components/ComparisonCard";
 
-import { useAuth } from "../context/AuthContext";
-
 export default function ChatPage() {
-  const { user } = useAuth();
-
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,8 +41,6 @@ export default function ChatPage() {
     try {
       const res = await sendMessage(message, user);
 
-      console.log("API Response:", res);
-
       setMessages((prev) => [
         ...prev,
         {
@@ -48,8 +53,6 @@ export default function ChatPage() {
         },
       ]);
     } catch (err) {
-      console.error(err);
-
       setMessages((prev) => [
         ...prev,
         {
@@ -64,225 +67,253 @@ export default function ChatPage() {
     setMessage("");
   };
 
-  const currentGoal =
-    [...messages].reverse().find((m) => m.type === "bot")?.goal || "product";
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-purple-100 flex">
+    <div className="min-h-screen bg-[#050505] text-white flex flex-col">
 
-      {/* Sidebar */}
-      <div className="w-64 bg-white/70 backdrop-blur-xl border-r hidden md:flex flex-col p-5">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="bg-violet-600 p-2 rounded-xl">
-            <Sparkles className="text-white" size={20} />
-          </div>
-          <div>
-            <h1 className="font-bold text-lg">AgentPay</h1>
-            <p className="text-xs text-gray-500">AI Commerce</p>
-          </div>
-        </div>
+      {/* ================= NAVBAR ================= */}
+      <header className="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        <div className="space-y-2">
-          <div
-            className={`p-3 rounded-xl ${currentGoal === "product"
-                ? "bg-violet-100 text-violet-700"
-                : "hover:bg-gray-100"
-              }`}
-          >
-            🛍 Product Search
-          </div>
+          {/* Logo */}
+          <div className="flex items-center gap-3 cursor-pointer">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center">
+              <Sparkles size={20} />
+            </div>
 
-          <div
-            className={`p-3 rounded-xl ${currentGoal === "business"
-                ? "bg-violet-100 text-violet-700"
-                : "hover:bg-gray-100"
-              }`}
-          >
-            ☕ Cafés & Restaurants
-          </div>
-
-          <div
-            className={`p-3 rounded-xl ${currentGoal === "events"
-                ? "bg-violet-100 text-violet-700"
-                : "hover:bg-gray-100"
-              }`}
-          >
-            🎉 Events
-          </div>
-        </div>
-      </div>
-
-      {/* Main */}
-      <div className="flex-1 flex flex-col">
-
-        {/* Header */}
-        <div className="backdrop-blur-xl bg-white/70 border-b px-8 py-4 flex justify-between items-center">
-          <div>
-            <h2 className="text-xl font-bold">Good Evening, Tisha 👋</h2>
-            <p className="text-sm text-gray-500">
-              Discover products, cafés and experiences in real time
-            </p>
-          </div>
-
-          <button
-            onClick={() => navigate("/orders")}
-            className="bg-white border px-4 py-2 rounded-xl hover:bg-gray-200 text-sm font-medium"
-          >
-            My Orders
-          </button>
-
-          <div className="bg-violet-600 text-white px-4 py-2 rounded-full text-sm flex items-center gap-2">
-            <Sparkles size={14} />
-            Gemini + LangGraph
-          </div>
-        </div>
-        
-
-        {/* Chat */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-6">
-
-          {messages.length === 0 && (
-            <div className="text-center mt-24">
-              <ShoppingBag
-                size={52}
-                className="mx-auto text-violet-600 mb-4"
-              />
-
-              <h2 className="text-3xl font-bold mb-2">
-                What would you like to discover?
-              </h2>
-
-              <p className="text-gray-500">
-                Try “Nike Air Max under ₹5000”, “Best cafés in Jaipur” or
-                “Concerts in Bangalore this weekend”.
+            <div>
+              <h1 className="font-bold text-xl">AgentPay</h1>
+              <p className="text-xs text-zinc-500">
+                AI Commerce Platform
               </p>
             </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3">
+
+            <button className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition">
+              <History size={16} />
+              History
+            </button>
+
+            <button
+              onClick={() => navigate("/orders")}
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
+            >
+              <Package size={16} />
+              Orders
+            </button>
+
+            <button
+              onClick={() => navigate("/audit")}
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
+            >
+              <Shield size={16} />
+              Audit
+            </button>
+
+            <button className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center transition">
+              <User size={18} />
+            </button>
+
+            <button
+              onClick={async () => {
+                await logout();
+                navigate("/");
+              }}
+              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl font-medium transition"
+            >
+              <LogOut size={16} />
+            </button>
+
+          </div>
+        </div>
+      </header>
+
+      {/* ================= MAIN ================= */}
+      <main className="flex-1 overflow-y-auto">
+
+        <div className="max-w-6xl mx-auto px-6 py-14">
+
+          {/* Hero */}
+          {messages.length === 0 && (
+            <div className="text-center mb-20">
+
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-violet-500/20 bg-violet-500/10 text-violet-300 text-sm mb-8">
+                <Sparkles size={14} />
+                Gemini + LangGraph Powered
+              </div>
+
+              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+                What can I help you
+                <span className="text-violet-400"> discover?</span>
+              </h1>
+
+              <p className="text-zinc-500 text-lg max-w-2xl mx-auto mt-6 leading-8">
+                Search products, compare prices, find restaurants and
+                explore events using natural language — all in one place.
+              </p>
+
+              {/* Suggestions */}
+              <div className="flex flex-wrap justify-center gap-3 mt-10">
+                {[
+                  "Nike shoes under ₹5000",
+                  "Best cafés in Bangalore",
+                  "Concerts this weekend",
+                ].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => setMessage(item)}
+                    className="px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-sm transition"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+
+            </div>
           )}
 
-          {messages.map((msg, i) => (
-            <div key={i}>
+          {/* Conversation */}
+          <div className="space-y-8">
 
-              {/* User */}
-              {msg.type === "user" && (
-                <div className="flex justify-end">
-                  <div className="bg-violet-600 text-white px-5 py-3 rounded-3xl max-w-lg shadow-lg">
-                    {msg.text}
-                  </div>
-                </div>
-              )}
+            {messages.map((msg, i) => (
+              <div key={i}>
 
-              {/* Bot */}
-              {msg.type === "bot" && (
-                <div className="space-y-4">
-
-                  <div className="flex items-center gap-2">
-                    <div className="bg-violet-600 w-9 h-9 rounded-full flex items-center justify-center">
-                      <Sparkles size={18} className="text-white" />
+                {/* USER */}
+                {msg.type === "user" && (
+                  <div className="flex justify-end">
+                    <div className="bg-violet-600 px-5 py-3 rounded-3xl max-w-xl shadow-lg">
+                      {msg.text}
                     </div>
-                    <span className="font-semibold">AgentPay</span>
                   </div>
+                )}
 
-                  {/* PRODUCTS */}
-                  {msg.goal === "product" && (
-                    <>
-                      <p className="text-gray-600">
-                        I compared prices across marketplaces and found the best deal ✨
-                      </p>
+                {/* BOT */}
+                {msg.type === "bot" && (
+                  <div className="space-y-5">
 
-                      {msg.comparison?.length > 0 && (
-                        <ComparisonCard comparison={msg.comparison[0]} />
-                      )}
-
-                      <h3 className="font-semibold text-lg pt-2">
-                        All Products
-                      </h3>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        {msg.products?.map((product) => (
-                          <ProductCard
-                            key={product.id}
-                            product={product}
-                          />
-                        ))}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-violet-600 flex items-center justify-center">
+                        <Sparkles size={18} />
                       </div>
-                    </>
-                  )}
 
-                  {/* BUSINESS */}
-                  {msg.goal === "business" && (
-                    <>
-                      <p className="text-gray-600">
-                        I found some great places for you ☕
-                      </p>
-
-                      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {msg.businesses?.map((business) => (
-                          <BusinessCard
-                            key={business.id}
-                            business={business}
-                          />
-                        ))}
+                      <div>
+                        <h3 className="font-semibold">AgentPay AI</h3>
+                        <p className="text-xs text-zinc-500">
+                          Comparing trusted sources...
+                        </p>
                       </div>
-                    </>
-                  )}
+                    </div>
 
-                  {/* EVENTS */}
-                  {msg.goal === "events" && (
-                    <>
-                      <p className="text-gray-600">
-                        I found exciting events happening near you 🎉
-                      </p>
+                    {/* Products */}
+                    {msg.goal === "product" && (
+                      <>
+                        <p className="text-zinc-400">
+                          I searched multiple marketplaces and found the best available options.
+                        </p>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {msg.events?.map((event) => (
-                          <EventCard key={event.id} event={event} />
-                        ))}
-                      </div>
-                    </>
-                  )}
+                        {msg.comparison?.length > 0 && (
+                          <ComparisonCard comparison={msg.comparison[0]} />
+                        )}
 
-                  {/* ERROR */}
-                  {msg.goal === "error" && (
-                    <p className="text-red-500">{msg.text}</p>
-                  )}
+                        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+                          {msg.products.map((product, index) => (
+                            <ProductCard
+                              key={`${product.id}-${index}`}
+                              product={product}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
 
-                </div>
-              )}
-            </div>
-          ))}
+                    {/* Businesses */}
+                    {msg.goal === "business" && (
+                      <>
+                        <p className="text-zinc-400">
+                          Here are the highest rated places near you.
+                        </p>
 
-          {loading && (
-            <div className="flex items-center gap-3 text-gray-500">
-              <div className="animate-spin rounded-full h-5 w-5 border-2 border-violet-500 border-t-transparent"></div>
-              AgentPay is thinking...
-            </div>
-          )}
+                        <div className="grid lg:grid-cols-2 gap-5">
+                          {msg.businesses.map((business) => (
+                            <BusinessCard
+                              key={business.id}
+                              business={business}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {/* Events */}
+                    {msg.goal === "events" && (
+                      <>
+                        <p className="text-zinc-400">
+                          These events match your search.
+                        </p>
+
+                        <div className="grid lg:grid-cols-2 gap-5">
+                          {msg.events.map((event) => (
+                            <EventCard
+                              key={event.id}
+                              event={event}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {/* Error */}
+                    {msg.goal === "error" && (
+                      <p className="text-red-400">{msg.text}</p>
+                    )}
+
+                  </div>
+                )}
+
+              </div>
+            ))}
+
+            {/* Loading */}
+            {loading && (
+              <div className="flex items-center gap-3 text-zinc-500">
+                <div className="w-5 h-5 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
+                AgentPay is thinking...
+              </div>
+            )}
+
+          </div>
 
         </div>
+      </main>
 
-        {/* Input */}
-        <div className="p-6 border-t bg-white/70 backdrop-blur-xl">
-          <div className="flex gap-3 bg-white rounded-2xl shadow-md p-2">
+      {/* ================= INPUT ================= */}
+      <div className="sticky bottom-10 border-t border-white/10 bg-black/80 backdrop-blur-xl">
+        <div className="max-w-5xl mx-auto p-5">
+
+          <div className="flex items-center gap-3 bg-[#111111] border border-white/10 rounded-2xl p-3">
 
             <input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Find Nike shoes, cafés or events..."
-              className="flex-1 px-4 outline-none bg-transparent"
+              placeholder="Search products, restaurants or events..."
+              className="flex-1 bg-transparent outline-none text-white placeholder:text-zinc-500 px-2"
             />
 
             <button
               onClick={handleSend}
-              className="bg-violet-600 hover:bg-violet-700 text-white p-3 rounded-xl transition"
+              className="w-12 h-12 rounded-xl bg-violet-600 hover:bg-violet-700 flex items-center justify-center transition"
             >
               <Send size={18} />
             </button>
 
           </div>
-        </div>
 
+        </div>
       </div>
+
     </div>
   );
 }

@@ -1,79 +1,118 @@
 import { useState } from "react";
-import { Trophy, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  ShieldCheck,
+  ExternalLink,
+} from "lucide-react";
 
 export default function ComparisonCard({ comparison }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl border border-violet-100 overflow-hidden mb-6">
+    <div className="rounded-3xl border border-violet-500/20 bg-gradient-to-br from-[#111111] to-[#0A0A0A] overflow-hidden mb-8">
 
-      {/* Hero */}
-      <div className="bg-gradient-to-r from-violet-600 to-purple-600 p-6 text-white">
-        <div className="flex items-center gap-2 mb-4">
-          <Trophy size={18} />
-          <span className="font-semibold">BEST DEAL FOUND</span>
+      {/* AI Header */}
+      <div className="p-6 border-b border-white/10">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 text-violet-300 text-sm border border-violet-500/20">
+          <Sparkles size={14} />
+          AI Recommendation
         </div>
 
-        <div className="flex gap-5 items-center">
-          <img
-            src={comparison.best_image}
-            alt={comparison.title}
-            className="w-28 h-28 bg-white rounded-xl object-contain p-2"
-          />
+        <div className="mt-5 flex gap-5 items-center">
+          <div className="w-28 h-28 rounded-2xl bg-[#1A1A1A] flex items-center justify-center p-3 border border-white/10">
+            <img
+              src={comparison.best_image}
+              alt={comparison.title}
+              className="max-h-24 object-contain"
+            />
+          </div>
 
           <div className="flex-1">
-            <h2 className="text-xl font-bold">{comparison.title}</h2>
+            <h2 className="text-2xl font-bold text-white leading-snug">
+              {comparison.title}
+            </h2>
 
-            <p className="text-3xl font-bold mt-2">
-              {comparison.best_price}
-            </p>
+            <div className="flex items-center gap-2 mt-2 text-emerald-400 text-sm">
+              <ShieldCheck size={15} />
+              Best verified offer
+            </div>
 
-            <p className="text-violet-100 mt-1">
+            <div className="flex items-end gap-3 mt-4">
+              <h1 className="text-4xl font-bold text-white">
+                {comparison.best_price}
+              </h1>
+
+              {comparison.saved > 0 && (
+                <span className="text-emerald-400 font-medium">
+                  Save ₹{comparison.saved}
+                </span>
+              )}
+            </div>
+
+            <p className="text-zinc-500 mt-1">
               Seller: {comparison.best_seller}
             </p>
-
-            {comparison.saved > 0 && (
-              <div className="mt-3 inline-block bg-green-500 px-3 py-1 rounded-full text-sm font-semibold">
-                Save ₹{comparison.saved}
-              </div>
-            )}
           </div>
         </div>
       </div>
 
-      {/* Offers */}
-      <div className="p-4">
+      {/* Compare Button */}
+      <div className="p-5">
         <button
           onClick={() => setOpen(!open)}
-          className="w-full flex justify-between items-center font-semibold text-violet-700"
+          className="w-full flex items-center justify-between rounded-2xl bg-white/5 border border-white/10 px-5 py-4 hover:bg-white/10 transition"
         >
-          <span>Compare all offers ({comparison.offers.length})</span>
-          {open ? <ChevronUp /> : <ChevronDown />}
+          <div className="text-left">
+            <p className="text-white font-semibold">
+              Compare all offers
+            </p>
+            <p className="text-sm text-zinc-500">
+              {comparison.offers.length} marketplaces analyzed
+            </p>
+          </div>
+
+          {open ? (
+            <ChevronUp className="text-zinc-400" />
+          ) : (
+            <ChevronDown className="text-zinc-400" />
+          )}
         </button>
 
+        {/* Offers */}
         {open && (
-          <div className="mt-4 space-y-3">
+          <div className="space-y-3 mt-5">
             {comparison.offers.map((offer) => (
               <div
                 key={offer.id}
-                className="flex items-center gap-3 p-3 rounded-xl border hover:bg-gray-50"
+                className="flex items-center gap-4 rounded-2xl bg-[#111111] border border-white/10 p-4 hover:border-violet-500/20 transition"
               >
-                <img
-                  src={offer.image}
-                  alt={offer.title}
-                  className="w-16 h-16 object-contain"
-                />
+                <div className="w-16 h-16 rounded-xl bg-[#1A1A1A] flex items-center justify-center p-2">
+                  <img
+                    src={offer.image}
+                    alt={offer.title}
+                    className="max-h-12 object-contain"
+                  />
+                </div>
 
-                <div className="flex-1">
-                  <p className="font-medium text-sm">{offer.title}</p>
-                  <p className="text-xs text-gray-500">{offer.seller}</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-white truncate">
+                    {offer.title}
+                  </h3>
+
+                  <p className="text-sm text-zinc-500">
+                    {offer.seller}
+                  </p>
                 </div>
 
                 <div className="text-right">
-                  <p className="font-bold">{offer.price}</p>
+                  <h3 className="font-bold text-white">
+                    {offer.price}
+                  </h3>
 
                   {offer.original_price && (
-                    <p className="text-xs line-through text-gray-400">
+                    <p className="text-xs line-through text-zinc-500">
                       {offer.original_price}
                     </p>
                   )}
@@ -82,9 +121,10 @@ export default function ComparisonCard({ comparison }) {
                     href={offer.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs text-violet-600 font-semibold"
+                    className="inline-flex items-center gap-1 text-violet-400 text-xs mt-2 hover:text-violet-300"
                   >
-                    Visit →
+                    Visit
+                    <ExternalLink size={12} />
                   </a>
                 </div>
               </div>

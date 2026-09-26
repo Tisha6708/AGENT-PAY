@@ -18,3 +18,8 @@ def save_order(order_data):
         **order_data,
         "created_at": datetime.utcnow()
     })
+
+def save_audit(log):
+    log["timestamp"] = datetime.utcnow()
+
+    db.collection("audit_logs").add(log)
